@@ -54,19 +54,19 @@ export default function HomePage() {
         <div className="case-meta">
           <div>
             <span className="m-label">Client</span>
-            <span className="m-value">BUBBL&apos;R<em>Antioxidant Sparkling Water</em></span>
+            <span className="m-value">BUBBL&apos;R<br /><em>Antioxidant Sparkling Water</em></span>
           </div>
           <div>
             <span className="m-label">Scope</span>
-            <span className="m-value">Creative direction<em>Lifestyle production</em></span>
+            <span className="m-value">Creative direction<br /><em>Lifestyle production</em></span>
           </div>
           <div>
             <span className="m-label">Deliverables</span>
-            <span className="m-value">Stills · Social<em>Seasonal campaigns</em></span>
+            <span className="m-value">Stills · Social<br /><em>Seasonal campaigns</em></span>
           </div>
           <div>
             <span className="m-label">Territory</span>
-            <span className="m-value">U.S. Midwest<em>Multi-season shoot</em></span>
+            <span className="m-value">U.S. Midwest<br /><em>Multi-season shoot</em></span>
           </div>
         </div>
 
@@ -220,7 +220,7 @@ export default function HomePage() {
             <div className="about-list">
               <div>
                 <span className="al-label">Specialties</span>
-                <span className="al-value">Hospitality<em>Travel · Lifestyle · Food &amp; Beverage</em></span>
+                <span className="al-value">Hospitality<br /><em>Travel · Lifestyle · Food &amp; Beverage</em></span>
               </div>
               <div>
                 <span className="al-label">Recent Locations</span>
@@ -228,7 +228,7 @@ export default function HomePage() {
               </div>
               <div>
                 <span className="al-label">Cameras</span>
-                <span className="al-value">Canon G7X Mark III<em>iPhone 15 Pro Max</em></span>
+                <span className="al-value">Canon G7X Mark III<br /><em>iPhone 15 Pro Max</em></span>
               </div>
               <div>
                 <span className="al-label">Editing</span>
@@ -236,11 +236,11 @@ export default function HomePage() {
               </div>
               <div>
                 <span className="al-label">Brand Partners</span>
-                <span className="al-value">BUBBL&apos;R<em>Antioxidant Sparkling Water</em></span>
+                <span className="al-value">BUBBL&apos;R<br /><em>Antioxidant Sparkling Water</em></span>
               </div>
               <div>
                 <span className="al-label">Available For</span>
-                <span className="al-value">Property campaigns<em>Editorial · Brand content</em></span>
+                <span className="al-value">Property campaigns<br /><em>Editorial · Brand content</em></span>
               </div>
             </div>
           </div>
