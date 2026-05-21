@@ -267,7 +267,7 @@ h3.display { font-size: clamp(24px, 2.4vw, 34px); }
   max-width: 56ch;
 }
 
-.body-copy p { margin: 0 0 1.6rem; }
+.body-copy p { margin: 0 0 2.25rem; }
 .body-copy p:last-child { margin-bottom: 0; }
 .body-copy strong { color: var(--ink); font-weight: 600; }
 
@@ -468,6 +468,7 @@ section.block:last-of-type { border-bottom: 0; margin-bottom: 0; padding-bottom:
   font-size: clamp(20px, 2vw, 28px);
   line-height: 1.35;
   color: var(--ink);
+  padding-top: 2rem;
 }
 
 .case-foot .quote::before { content: "\201C"; color: var(--accent); margin-right: 0.05em; }
