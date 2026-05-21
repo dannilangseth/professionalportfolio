@@ -269,7 +269,7 @@ h3.display { font-size: clamp(24px, 2.4vw, 34px); }
 
 .body-copy p { margin: 0 0 2.25rem; }
 .body-copy p:last-child { margin-bottom: 0; }
-.body-copy strong { color: var(--ink); font-weight: 600; }
+.body-copy strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 0.5rem; }
 
 /* ===================== Hero carousel ===================== */
 .hero {
