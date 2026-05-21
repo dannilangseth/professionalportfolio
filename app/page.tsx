@@ -259,12 +259,6 @@ export default function HomePage() {
               dannilangseth@gmail.com
             </a>
             <div className="contact-extras">
-              <a href="#" download>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
-                </svg>
-                Download portfolio PDF
-              </a>
               <a href="https://www.instagram.com/dannilangseth/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="5" />

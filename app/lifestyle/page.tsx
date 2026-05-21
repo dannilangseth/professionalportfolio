@@ -113,7 +113,7 @@ const rows = [
   },
   {
     label: 'iv. Atmosphere & Air',
-    count: '04',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_1173.JPG',
@@ -123,24 +123,17 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
-        src: '/photos/IMG_1173_2.JPG',
-        alt: 'Sunset rooftop view, Ischia',
-        colSpan: 'span 7',
-        aspectRatio: '3/4',
-      },
-      {
         src: '/photos/IMG_9074.JPG',
         alt: 'Seljalandsfoss waterfall, Iceland',
         colSpan: 'span 5',
         aspectRatio: '3/4',
-        alignSelf: 'end',
       },
       {
         src: '/photos/IMG_8344_2.jpg',
         alt: 'Airplane window at sunset',
-        colSpan: 'span 6',
-        gridColumnStart: '4',
+        colSpan: 'span 7',
         aspectRatio: '3/4',
+        alignSelf: 'end',
       },
     ],
   },
