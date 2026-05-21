@@ -74,12 +74,10 @@ export default function HomePage() {
 
         <div className="case-foot">
           <div className="body-copy">
-            <p>
-              <strong>The brief.</strong> BUBBL&apos;R needed lifestyle-first imagery that reinforced their core promise — clean, antioxidant-driven, real moments — without leaning on studio lighting or staged setups. The product had to live inside the day, not next to it.
-            </p>
-            <p>
-              <strong>The work.</strong> A multi-season production across Wisconsin destinations: pumpkin patches at dusk, lake-house sunsets, forest settings. Aspirational but accessible — the same tonal language hospitality brands use when they&apos;re not trying to sound like one.
-            </p>
+            <p><strong>The brief.</strong></p>
+            <p>BUBBL&apos;R needed lifestyle-first imagery that reinforced their core promise — clean, antioxidant-driven, real moments — without leaning on studio lighting or staged setups. The product had to live inside the day, not next to it.</p>
+            <p><strong>The work.</strong></p>
+            <p>A multi-season production across Wisconsin destinations: pumpkin patches at dusk, lake-house sunsets, forest settings. Aspirational but accessible — the same tonal language hospitality brands use when they&apos;re not trying to sound like one.</p>
             <p>Assets landed across paid social, organic Instagram, and seasonal campaign rollouts.</p>
           </div>
           <div>
