@@ -113,7 +113,7 @@ const rows = [
   },
   {
     label: 'iv. Greek Isles',
-    count: '05',
+    count: '04',
     tiles: [
       {
         src: '/photos/IMG_3590_2.JPG',
@@ -129,30 +129,23 @@ const rows = [
         alignSelf: 'end',
       },
       {
-        src: '/photos/IMG_7778.JPG',
-        alt: 'Mykonos whitewashed window with blue shutter',
+        src: '/photos/IMG_1623.JPG',
+        alt: 'Mykonos cats at rest',
         colSpan: 'span 5',
         aspectRatio: '3/4',
       },
       {
-        src: '/photos/IMG_1623.JPG',
-        alt: 'Mykonos cats at rest',
+        src: '/photos/IMG_0255_3.JPG',
+        alt: 'Aegean coastline',
         colSpan: 'span 7',
         aspectRatio: '3/4',
         alignSelf: 'end',
-      },
-      {
-        src: '/photos/IMG_0255_3.JPG',
-        alt: 'Aegean coastline',
-        colSpan: 'span 6',
-        gridColumnStart: '4',
-        aspectRatio: '3/4',
       },
     ],
   },
   {
     label: 'v. Atmosphere & Air',
-    count: '04',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_1173.JPG',
@@ -162,21 +155,15 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
-        src: '/photos/IMG_9074.JPG',
-        alt: 'Seljalandsfoss waterfall, Iceland',
-        colSpan: 'span 5',
-        aspectRatio: '3/4',
-      },
-      {
         src: '/photos/IMG_7783.JPG',
         alt: 'Iceland waterfall through volcanic rock arch',
-        colSpan: 'span 4',
+        colSpan: 'span 7',
         aspectRatio: '3/4',
       },
       {
         src: '/photos/IMG_8344_2.jpg',
         alt: 'Airplane window at sunset',
-        colSpan: 'span 3',
+        colSpan: 'span 5',
         aspectRatio: '3/4',
         alignSelf: 'end',
       },
@@ -225,7 +212,7 @@ export default function LifestylePage() {
           Cities, character, architecture, and the quiet moments that give a place its identity. Editorial-feeling imagery for tourism partners, travel publications, and lifestyle brands.
         </p>
         <div className="meta">
-          <span>Italy · Venice · Burano · Greece · France · Spain · Hungary · Iceland</span>
+          <span>Italy · Greece · France · Spain · Hungary · Iceland</span>
         </div>
       </header>
       <Gallery rows={rows} />

@@ -9,21 +9,8 @@ export const metadata: Metadata = {
 const rows = [
   {
     label: 'i. The Table',
-    count: '05',
+    count: '04',
     tiles: [
-      {
-        src: '/photos/IMG_9672.JPG',
-        alt: 'Chez Black bistro interior, Positano',
-        colSpan: 'span 7',
-        aspectRatio: '3/4',
-      },
-      {
-        src: '/photos/IMG_0124.JPG',
-        alt: 'Spaghetti vongole on hand-painted ceramic, Praiano',
-        colSpan: 'span 5',
-        aspectRatio: '3/4',
-        alignSelf: 'end',
-      },
       {
         src: '/photos/IMG_7790.JPG',
         alt: 'Catalan market stall with seasonal stone fruits, Barcelona',
@@ -32,17 +19,24 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
+        src: '/photos/IMG_0124.JPG',
+        alt: 'Spaghetti vongole on hand-painted ceramic, Praiano',
+        colSpan: 'span 7',
+        aspectRatio: '3/4',
+      },
+      {
         src: '/photos/IMG_0358.JPG',
         alt: 'Market fruit and berries',
         colSpan: 'span 5',
         aspectRatio: '3/4',
+        alignSelf: 'end',
       },
       {
         src: '/photos/IMG_2693_VSCO4.JPG',
         alt: 'Bruschetta on wooden board, Mykonos',
-        colSpan: 'span 7',
+        colSpan: 'span 8',
+        gridColumnStart: '3',
         aspectRatio: '3/4',
-        alignSelf: 'end',
       },
     ],
   },
