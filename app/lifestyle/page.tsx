@@ -87,7 +87,7 @@ const rows = [
   },
   {
     label: 'iii. Venice & Burano',
-    count: '03',
+    count: '04',
     tiles: [
       {
         src: '/photos/IMG_7785.JPG',
@@ -103,11 +103,18 @@ const rows = [
         aspectRatio: '3/4',
       },
       {
-        src: '/photos/IMG_7786.JPG',
-        alt: 'Burano fisherman\'s house facade in vivid colour',
+        src: '/photos/IMG_2693_VSCO4.JPG',
+        alt: 'Blue door with vibrant colour, Burano',
         colSpan: 'span 7',
         aspectRatio: '3/4',
         alignSelf: 'end',
+      },
+      {
+        src: '/photos/IMG_7786.JPG',
+        alt: 'Burano fisherman\'s house facade in vivid colour',
+        colSpan: 'span 8',
+        gridColumnStart: '3',
+        aspectRatio: '3/4',
       },
     ],
   },

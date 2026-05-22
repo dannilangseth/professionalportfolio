@@ -32,7 +32,7 @@ const rows = [
         alignSelf: 'end',
       },
       {
-        src: '/photos/IMG_2693_VSCO4.JPG',
+        src: '/photos/IMG_2693.JPG',
         alt: 'Bruschetta on wooden board, Mykonos',
         colSpan: 'span 8',
         gridColumnStart: '3',
