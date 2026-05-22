@@ -32,8 +32,8 @@ const rows = [
         alignSelf: 'end',
       },
       {
-        src: '/photos/IMG_2693.JPG',
-        alt: 'Bruschetta on wooden board, Mykonos',
+        src: '/photos/IMG_7777.JPG',
+        alt: 'Food on wooden board, Mykonos',
         colSpan: 'span 8',
         gridColumnStart: '3',
         aspectRatio: '3/4',

@@ -97,8 +97,8 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
-        src: '/photos/IMG_7777.JPG',
-        alt: 'Blue house facade, Burano',
+        src: '/photos/IMG_2693.JPG',
+        alt: 'Colourful scene, Burano',
         colSpan: 'span 5',
         aspectRatio: '3/4',
       },
@@ -120,7 +120,7 @@ const rows = [
   },
   {
     label: 'iv. Greek Isles',
-    count: '04',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_3590_2.JPG',
@@ -136,17 +136,11 @@ const rows = [
         alignSelf: 'end',
       },
       {
-        src: '/photos/IMG_1623.JPG',
-        alt: 'Mykonos cats at rest',
-        colSpan: 'span 5',
-        aspectRatio: '3/4',
-      },
-      {
         src: '/photos/IMG_0255_3.JPG',
         alt: 'Aegean coastline',
-        colSpan: 'span 7',
+        colSpan: 'span 8',
+        gridColumnStart: '3',
         aspectRatio: '3/4',
-        alignSelf: 'end',
       },
     ],
   },
@@ -178,31 +172,38 @@ const rows = [
   },
   {
     label: 'vi. Quieter Frames',
-    count: '04',
+    count: '05',
     tiles: [
       {
         src: '/photos/IMG_0161.JPG',
         alt: 'Travel detail',
-        colSpan: 'span 3',
+        colSpan: 'span 4',
         aspectRatio: '3/4',
       },
       {
         src: '/photos/IMG_7784.JPG',
         alt: 'Street art mural on a European wall',
-        colSpan: 'span 3',
+        colSpan: 'span 4',
+        aspectRatio: '3/4',
+      },
+      {
+        src: '/photos/IMG_1118.JPG',
+        alt: 'Quiet moment',
+        colSpan: 'span 4',
         aspectRatio: '3/4',
       },
       {
         src: '/photos/IMG_0582_2.JPG',
         alt: 'Coastal scene',
-        colSpan: 'span 3',
+        colSpan: 'span 6',
         aspectRatio: '3/4',
       },
       {
         src: '/photos/IMG_0899_2.JPG',
         alt: 'European street',
-        colSpan: 'span 3',
+        colSpan: 'span 6',
         aspectRatio: '3/4',
+        alignSelf: 'end',
       },
     ],
   },
