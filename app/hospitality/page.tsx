@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const rows = [
   {
     label: 'i. Mediterranean Properties',
-    count: '04',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_1137.JPG',
@@ -25,18 +25,11 @@ const rows = [
         aspectRatio: '3/4',
       },
       {
-        src: '/photos/IMG_4338.JPG',
-        alt: 'Mykonos guest-room window view of the Aegean',
+        src: '/photos/IMG_9865_2.JPG',
+        alt: 'Villa Rufolo pergola with bougainvillea, Ravello',
         colSpan: 'span 5',
         aspectRatio: '3/4',
         alignSelf: 'end',
-      },
-      {
-        src: '/photos/IMG_9865_2.JPG',
-        alt: 'Villa Rufolo pergola with bougainvillea, Ravello',
-        colSpan: 'span 8',
-        gridColumnStart: '3',
-        aspectRatio: '3/4',
       },
     ],
   },

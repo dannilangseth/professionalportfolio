@@ -180,8 +180,8 @@ const rows = [
         aspectRatio: '3/4',
       },
       {
-        src: '/photos/IMG_1118.JPG',
-        alt: 'Quiet moment',
+        src: '/photos/IMG_4338.JPG',
+        alt: 'Window view of the Aegean sea, Mykonos',
         colSpan: 'span 4',
         aspectRatio: '3/4',
       },
