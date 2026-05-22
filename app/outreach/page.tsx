@@ -2,6 +2,23 @@
 
 import { useState, FormEvent } from 'react'
 
+const CITY_COUNTRY: Record<string, string> = {
+  'Koh Samui': 'Thailand', 'Koh Lanta': 'Thailand', 'Koh Tao': 'Thailand',
+  'Koh Phangan': 'Thailand', 'Phuket': 'Thailand', 'Chiang Mai': 'Thailand',
+  'Bangkok': 'Thailand', 'Krabi': 'Thailand', 'Hua Hin': 'Thailand',
+  'Bali': 'Indonesia', 'Ubud': 'Indonesia', 'Seminyak': 'Indonesia', 'Lombok': 'Indonesia',
+  'Santorini': 'Greece', 'Mykonos': 'Greece', 'Athens': 'Greece', 'Crete': 'Greece', 'Rhodes': 'Greece',
+  'Positano': 'Italy', 'Amalfi': 'Italy', 'Rome': 'Italy', 'Florence': 'Italy', 'Venice': 'Italy', 'Capri': 'Italy',
+  'Barcelona': 'Spain', 'Ibiza': 'Spain', 'Mallorca': 'Spain', 'Madrid': 'Spain',
+  'Paris': 'France', 'Nice': 'France', 'Cannes': 'France',
+  'Reykjavik': 'Iceland',
+  'Budapest': 'Hungary',
+  'Maldives': 'Maldives',
+  'Dubai': 'UAE', 'Abu Dhabi': 'UAE',
+  'Marrakech': 'Morocco',
+  'Tulum': 'Mexico', 'Cabo San Lucas': 'Mexico', 'Cancun': 'Mexico', 'Playa del Carmen': 'Mexico',
+}
+
 const COUNTRIES = [
   'Thailand', 'Indonesia', 'Vietnam', 'Japan', 'Singapore', 'Malaysia',
   'Philippines', 'Sri Lanka', 'Maldives', 'India', 'Nepal', 'Australia',
@@ -52,7 +69,9 @@ export default function OutreachPage() {
 
   function handleCityChange(val: string) {
     setCity(val)
-    setBody(buildEmailBody(hotelName, val, country))
+    const detected = CITY_COUNTRY[val] ?? country
+    if (CITY_COUNTRY[val]) setCountry(CITY_COUNTRY[val])
+    setBody(buildEmailBody(hotelName, val, detected))
   }
 
   function handleCountryChange(val: string) {

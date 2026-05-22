@@ -49,7 +49,11 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const sheets = google.sheets({ version: 'v4', auth })
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const followUp = new Date(today)
+  followUp.setDate(followUp.getDate() + 14)
+  const followUpStr = followUp.toISOString().split('T')[0]
 
   const row = [
     payload.country,
@@ -58,8 +62,8 @@ async function appendToSheet(payload: OutreachPayload) {
     '',
     payload.contactEmail,
     'Contacted',
-    today,
-    '',
+    todayStr,
+    followUpStr,
   ]
 
   await sheets.spreadsheets.values.append({
