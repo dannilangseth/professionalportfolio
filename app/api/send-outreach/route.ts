@@ -59,7 +59,7 @@ async function appendToSheet(payload: OutreachPayload) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: "Client Lead & Outreach Tracker!A:H",
+    range: "Sheet1!A:H",
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [row] },
   })
