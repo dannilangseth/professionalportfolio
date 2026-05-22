@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const rows = [
   {
     label: 'i. Italian Coast',
-    count: '05',
+    count: '06',
     tiles: [
       {
         src: '/photos/IMG_0128.JPG',
@@ -43,6 +43,13 @@ const rows = [
         colSpan: 'span 7',
         aspectRatio: '3/4',
         alignSelf: 'end',
+      },
+      {
+        src: '/photos/IMG_0255_3.JPG',
+        alt: 'Girl looking out over the Italian coast',
+        colSpan: 'span 8',
+        gridColumnStart: '3',
+        aspectRatio: '3/4',
       },
     ],
   },
@@ -120,7 +127,7 @@ const rows = [
   },
   {
     label: 'iv. Greek Isles',
-    count: '03',
+    count: '02',
     tiles: [
       {
         src: '/photos/IMG_3590_2.JPG',
@@ -134,13 +141,6 @@ const rows = [
         colSpan: 'span 5',
         aspectRatio: '3/4',
         alignSelf: 'end',
-      },
-      {
-        src: '/photos/IMG_0255_3.JPG',
-        alt: 'Aegean coastline',
-        colSpan: 'span 8',
-        gridColumnStart: '3',
-        aspectRatio: '3/4',
       },
     ],
   },
