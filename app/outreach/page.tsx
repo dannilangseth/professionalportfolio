@@ -31,6 +31,11 @@ Dannielle Langseth
 dannilangseth@gmail.com`
 }
 
+interface DuplicateWarning {
+  hotel: string
+  date: string
+}
+
 export default function OutreachPage() {
   const [hotelName, setHotelName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
@@ -40,6 +45,7 @@ export default function OutreachPage() {
   const [body, setBody] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [duplicateWarning, setDuplicateWarning] = useState<DuplicateWarning | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleHotelNameChange(val: string) {
@@ -60,6 +66,26 @@ export default function OutreachPage() {
       const detected = await geocodeCity(val)
       if (detected) setCountry(detected)
     }, 500)
+  }
+
+  async function handleEmailBlur() {
+    const email = contactEmail.trim()
+    if (!email) return
+    setDuplicateWarning(null)
+    try {
+      const res = await fetch('/api/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.duplicate) {
+        setDuplicateWarning({ hotel: data.hotel, date: data.date })
+      }
+    } catch {
+      // non-blocking — silently ignore network errors
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -83,6 +109,7 @@ export default function OutreachPage() {
       setCountry('')
       setSubject('')
       setBody('')
+      setDuplicateWarning(null)
     } catch (err) {
       setStatus('error')
       setErrorMsg(err instanceof Error ? err.message : 'Something went wrong.')
@@ -125,12 +152,28 @@ export default function OutreachPage() {
         .form-textarea:focus {
           border-bottom-color: var(--ink);
         }
+        .form-input--warn {
+          border-bottom-color: #b85c38 !important;
+        }
         .form-textarea {
           resize: vertical;
           min-height: 220px;
           line-height: 1.65;
           color: var(--text-2);
           font-size: 14px;
+        }
+        .duplicate-warn {
+          font-family: var(--sans);
+          font-size: 12.5px;
+          color: #b85c38;
+          margin-top: 0.4rem;
+          display: flex;
+          align-items: center;
+          gap: 0.4em;
+        }
+        .duplicate-warn::before {
+          content: "⚠";
+          font-size: 11px;
         }
         .submit-btn {
           font-family: var(--label);
@@ -217,13 +260,19 @@ export default function OutreachPage() {
             <label className="form-label" htmlFor="contactEmail">Contact Email</label>
             <input
               id="contactEmail"
-              className="form-input"
+              className={`form-input${duplicateWarning ? ' form-input--warn' : ''}`}
               type="email"
               value={contactEmail}
-              onChange={e => setContactEmail(e.target.value)}
+              onChange={e => { setContactEmail(e.target.value); setDuplicateWarning(null) }}
+              onBlur={handleEmailBlur}
               placeholder="marketing@resort.com"
               required
             />
+            {duplicateWarning && (
+              <span className="duplicate-warn">
+                Already contacted — {duplicateWarning.hotel}{duplicateWarning.date ? ` on ${duplicateWarning.date}` : ''}
+              </span>
+            )}
           </div>
 
           <div className="row-two">
@@ -248,8 +297,7 @@ export default function OutreachPage() {
                 type="text"
                 value={country}
                 onChange={e => setCountry(e.target.value)}
-                placeholder="Auto-detected…"
-                required
+                placeholder="Auto-detected from city"
               />
             </div>
           </div>
