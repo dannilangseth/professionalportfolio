@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
-import { google } from 'googleapis'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,6 +14,8 @@ interface OutreachPayload {
 }
 
 async function sendEmail(payload: OutreachPayload) {
+  const nodemailer = (await import('nodemailer')).default
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -35,6 +35,8 @@ async function sendEmail(payload: OutreachPayload) {
 }
 
 async function appendToSheet(payload: OutreachPayload) {
+  const { google } = await import('googleapis')
+
   const privateKey = (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\\\n/g, '\\n').replace(/\\n/g, '\n')
 
   const auth = new google.auth.GoogleAuth({
@@ -49,7 +51,6 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const today = new Date().toISOString().split('T')[0]
 
-  // Columns: Country, City, Entity Name, Contact Name, Email Address, Outreach Status, Last Contact Date, Next Follow-up Date
   const row = [
     payload.country,
     payload.city,
@@ -63,7 +64,7 @@ async function appendToSheet(payload: OutreachPayload) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: "Sheet1!A:H",
+    range: 'Sheet1!A:H',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [row] },
   })
