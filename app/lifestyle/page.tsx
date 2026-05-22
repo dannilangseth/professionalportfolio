@@ -94,7 +94,7 @@ const rows = [
   },
   {
     label: 'iii. Venice & Burano',
-    count: '04',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_7785.JPG',
@@ -104,17 +104,10 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
-        src: '/photos/IMG_2693.JPG',
-        alt: 'Colourful scene, Burano',
-        colSpan: 'span 5',
-        aspectRatio: '3/4',
-      },
-      {
         src: '/photos/IMG_2693_VSCO4.JPG',
         alt: 'Blue door with vibrant colour, Burano',
-        colSpan: 'span 7',
+        colSpan: 'span 5',
         aspectRatio: '3/4',
-        alignSelf: 'end',
       },
       {
         src: '/photos/IMG_7786.JPG',
