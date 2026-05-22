@@ -134,7 +134,7 @@ export default function HomePage() {
             </p>
             <div className="body-copy">
               <p>
-                Photographers who can <em>see</em> a marketable moment make the difference between content and campaign. The Longball shot wasn&apos;t commissioned — it was a frame waiting to happen: a brand cue dropping cleanly into a landscape that already told a story of motion, coast, and easy afternoons.
+                Photographers who can <em>see</em>{' '}a marketable moment make the difference between content and campaign. The Longball shot wasn&apos;t commissioned — it was a frame waiting to happen: a brand cue dropping cleanly into a landscape that already told a story of motion, coast, and easy afternoons.
               </p>
               <p>
                 It&apos;s the way I see frames before I take them, and the same instinct I bring to commissioned partner work — scouting moments where a logo, a label, or a brand cue lands naturally inside the picture, not pasted on top of it.
