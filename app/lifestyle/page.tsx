@@ -55,7 +55,7 @@ const rows = [
   },
   {
     label: 'ii. Cities & Heritage',
-    count: '05',
+    count: '04',
     tiles: [
       {
         src: '/photos/IMG_4402.JPG',
@@ -80,21 +80,15 @@ const rows = [
       {
         src: '/photos/IMG_9062.JPG',
         alt: 'Nun at a Marian shrine, Rome',
-        colSpan: 'span 5',
+        colSpan: 'span 6',
+        gridColumnStart: '4',
         aspectRatio: '3/4',
-      },
-      {
-        src: '/photos/IMG_7788.JPG',
-        alt: 'Gondola on a Venice canal',
-        colSpan: 'span 7',
-        aspectRatio: '3/4',
-        alignSelf: 'end',
       },
     ],
   },
   {
     label: 'iii. Venice & Burano',
-    count: '03',
+    count: '04',
     tiles: [
       {
         src: '/photos/IMG_7785.JPG',
@@ -104,10 +98,17 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
+        src: '/photos/IMG_7788.JPG',
+        alt: 'Gondola on a Venice canal',
+        colSpan: 'span 7',
+        aspectRatio: '3/4',
+      },
+      {
         src: '/photos/IMG_2693_VSCO4.JPG',
         alt: 'Blue door with vibrant colour, Burano',
         colSpan: 'span 5',
         aspectRatio: '3/4',
+        alignSelf: 'end',
       },
       {
         src: '/photos/IMG_7786.JPG',
