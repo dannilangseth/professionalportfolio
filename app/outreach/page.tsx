@@ -1,36 +1,20 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, useRef, FormEvent } from 'react'
 
-const CITY_COUNTRY: Record<string, string> = {
-  'Koh Samui': 'Thailand', 'Koh Lanta': 'Thailand', 'Koh Tao': 'Thailand',
-  'Koh Phangan': 'Thailand', 'Phuket': 'Thailand', 'Chiang Mai': 'Thailand',
-  'Bangkok': 'Thailand', 'Krabi': 'Thailand', 'Hua Hin': 'Thailand',
-  'Bali': 'Indonesia', 'Ubud': 'Indonesia', 'Seminyak': 'Indonesia', 'Lombok': 'Indonesia',
-  'Santorini': 'Greece', 'Mykonos': 'Greece', 'Athens': 'Greece', 'Crete': 'Greece', 'Rhodes': 'Greece',
-  'Positano': 'Italy', 'Amalfi': 'Italy', 'Rome': 'Italy', 'Florence': 'Italy', 'Venice': 'Italy', 'Capri': 'Italy',
-  'Barcelona': 'Spain', 'Ibiza': 'Spain', 'Mallorca': 'Spain', 'Madrid': 'Spain',
-  'Paris': 'France', 'Nice': 'France', 'Cannes': 'France',
-  'Reykjavik': 'Iceland',
-  'Budapest': 'Hungary',
-  'Maldives': 'Maldives',
-  'Dubai': 'UAE', 'Abu Dhabi': 'UAE',
-  'Marrakech': 'Morocco',
-  'Tulum': 'Mexico', 'Cabo San Lucas': 'Mexico', 'Cancun': 'Mexico', 'Playa del Carmen': 'Mexico',
+async function geocodeCity(city: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
+    )
+    const data = await res.json()
+    return (data.results?.[0]?.country as string) ?? null
+  } catch {
+    return null
+  }
 }
 
-const COUNTRIES = [
-  'Thailand', 'Indonesia', 'Vietnam', 'Japan', 'Singapore', 'Malaysia',
-  'Philippines', 'Sri Lanka', 'Maldives', 'India', 'Nepal', 'Australia',
-  'New Zealand', 'France', 'Italy', 'Spain', 'Portugal', 'Greece',
-  'Croatia', 'Turkey', 'Morocco', 'South Africa', 'Kenya', 'Tanzania',
-  'Mexico', 'Costa Rica', 'Colombia', 'Brazil', 'Peru', 'United States',
-  'Canada', 'United Kingdom', 'Germany', 'Switzerland', 'Austria',
-  'Other',
-]
-
-function buildEmailBody(hotelName: string, city: string, country: string) {
-  void city; void country
+function buildEmailBody(hotelName: string) {
   return `Hi there,
 
 I came across ${hotelName} and honestly fell in love with the property — it's exactly the kind of place I love to shoot.
@@ -56,6 +40,7 @@ export default function OutreachPage() {
   const [body, setBody] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleHotelNameChange(val: string) {
     setHotelName(val)
@@ -63,20 +48,18 @@ export default function OutreachPage() {
       setSubject(val ? `${val} — Photography Proposal` : '')
     }
     if (!body || body.includes(hotelName) || body === '') {
-      setBody(buildEmailBody(val, city, country))
+      setBody(buildEmailBody(val))
     }
   }
 
   function handleCityChange(val: string) {
     setCity(val)
-    const detected = CITY_COUNTRY[val] ?? country
-    if (CITY_COUNTRY[val]) setCountry(CITY_COUNTRY[val])
-    setBody(buildEmailBody(hotelName, val, detected))
-  }
-
-  function handleCountryChange(val: string) {
-    setCountry(val)
-    setBody(buildEmailBody(hotelName, city, val))
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (val.trim().length < 2) return
+    debounceRef.current = setTimeout(async () => {
+      const detected = await geocodeCity(val)
+      if (detected) setCountry(detected)
+    }, 500)
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -126,7 +109,6 @@ export default function OutreachPage() {
           color: var(--text-3);
         }
         .form-input,
-        .form-select,
         .form-textarea {
           font-family: var(--sans);
           font-size: 15px;
@@ -138,20 +120,10 @@ export default function OutreachPage() {
           outline: none;
           width: 100%;
           transition: border-color 200ms ease;
-          appearance: none;
-          -webkit-appearance: none;
         }
         .form-input:focus,
-        .form-select:focus,
         .form-textarea:focus {
           border-bottom-color: var(--ink);
-        }
-        .form-select {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239b9489' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 0 center;
-          padding-right: 1.5rem;
-          cursor: pointer;
         }
         .form-textarea {
           resize: vertical;
@@ -270,18 +242,15 @@ export default function OutreachPage() {
 
             <div className="form-field">
               <label className="form-label" htmlFor="country">Country</label>
-              <select
+              <input
                 id="country"
-                className="form-select"
+                className="form-input"
+                type="text"
                 value={country}
-                onChange={e => handleCountryChange(e.target.value)}
+                onChange={e => setCountry(e.target.value)}
+                placeholder="Auto-detected…"
                 required
-              >
-                <option value="" disabled>Select…</option>
-                {COUNTRIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 
