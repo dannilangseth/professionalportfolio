@@ -31,7 +31,7 @@ async function sendEmail(payload: OutreachPayload) {
 }
 
 async function appendToSheet(payload: OutreachPayload) {
-  const privateKey = (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\n/g, '\n')
+  const privateKey = (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\\\n/g, '\\n').replace(/\\n/g, '\n')
 
   const auth = new google.auth.GoogleAuth({
     credentials: {

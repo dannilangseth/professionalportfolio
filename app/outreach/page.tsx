@@ -13,17 +13,19 @@ const COUNTRIES = [
 ]
 
 function buildEmailBody(hotelName: string, city: string, country: string) {
+  void city; void country
   return `Hi there,
 
-My name is Dannielle Langseth — I'm a hospitality and travel photographer based out of Southeast Asia, specializing in hotels, resorts, and lifestyle content.
+I came across ${hotelName} and honestly fell in love with the property — it's exactly the kind of place I love to shoot.
 
-I came across ${hotelName} and was really struck by the property. I'd love to explore whether there's an opportunity to collaborate — whether that's a content partnership, a press stay, or a commissioned shoot.
+I'm a professional hospitality and travel photographer. My work has been used by consumer brands across the U.S. for their websites, social, and seasonal campaigns — and I'd love to bring that same quality to ${hotelName}.
 
-My portfolio: https://dannilangseth.com
+I'd love to propose a stay at your property in exchange for a fully edited photo package, licensed for use across your website, social, and marketing emails.
 
-I'd be happy to share more about my work and discuss what would be most valuable for your team.
+Portfolio: https://danniellelangseth.vercel.app
 
-Warm regards,
+Would love to discuss if it feels like a fit.
+
 Dannielle Langseth
 dannilangseth@gmail.com`
 }
