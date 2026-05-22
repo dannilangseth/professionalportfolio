@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import { google } from 'googleapis'
 
+export const dynamic = 'force-dynamic'
+
 const SHEET_ID = '1-P33-AjFFdhllHJIfazYZSNdEX8ByOqXxP-CDi9appo'
 
 interface OutreachPayload {
@@ -15,7 +17,9 @@ interface OutreachPayload {
 
 async function sendEmail(payload: OutreachPayload) {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
       user: 'dannilangseth@gmail.com',
       pass: process.env.GMAIL_APP_PASSWORD,
