@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const rows = [
   {
     label: 'i. The Table',
-    count: '03',
+    count: '05',
     tiles: [
       {
         src: '/photos/IMG_9672.JPG',
@@ -25,11 +25,24 @@ const rows = [
         alignSelf: 'end',
       },
       {
-        src: '/photos/IMG_0358.JPG',
-        alt: 'Market fruit and berries',
+        src: '/photos/IMG_7790.JPG',
+        alt: 'Catalan market stall with seasonal stone fruits, Barcelona',
         colSpan: 'span 12',
         aspectRatio: '3/2',
         objectPosition: '50% 50%',
+      },
+      {
+        src: '/photos/IMG_0358.JPG',
+        alt: 'Market fruit and berries',
+        colSpan: 'span 5',
+        aspectRatio: '3/4',
+      },
+      {
+        src: '/photos/IMG_2693_VSCO4.JPG',
+        alt: 'Bruschetta on wooden board, Mykonos',
+        colSpan: 'span 7',
+        aspectRatio: '3/4',
+        alignSelf: 'end',
       },
     ],
   },
