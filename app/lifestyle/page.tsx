@@ -87,7 +87,7 @@ const rows = [
   },
   {
     label: 'iii. Venice & Burano',
-    count: '02',
+    count: '03',
     tiles: [
       {
         src: '/photos/IMG_7785.JPG',
@@ -97,17 +97,23 @@ const rows = [
         objectPosition: '50% 50%',
       },
       {
+        src: '/photos/IMG_7777.JPG',
+        alt: 'Blue house facade, Burano',
+        colSpan: 'span 5',
+        aspectRatio: '3/4',
+      },
+      {
         src: '/photos/IMG_7786.JPG',
         alt: 'Burano fisherman\'s house facade in vivid colour',
-        colSpan: 'span 6',
-        gridColumnStart: '4',
+        colSpan: 'span 7',
         aspectRatio: '3/4',
+        alignSelf: 'end',
       },
     ],
   },
   {
     label: 'iv. Greek Isles',
-    count: '06',
+    count: '05',
     tiles: [
       {
         src: '/photos/IMG_3590_2.JPG',
@@ -129,24 +135,18 @@ const rows = [
         aspectRatio: '3/4',
       },
       {
-        src: '/photos/IMG_7777.JPG',
-        alt: 'Mykonos cobbled lane and blue door',
+        src: '/photos/IMG_1623.JPG',
+        alt: 'Mykonos cats at rest',
         colSpan: 'span 7',
         aspectRatio: '3/4',
         alignSelf: 'end',
-      },
-      {
-        src: '/photos/IMG_1623.JPG',
-        alt: 'Mykonos cats at rest',
-        colSpan: 'span 5',
-        aspectRatio: '3/4',
       },
       {
         src: '/photos/IMG_0255_3.JPG',
         alt: 'Aegean coastline',
-        colSpan: 'span 7',
+        colSpan: 'span 6',
+        gridColumnStart: '4',
         aspectRatio: '3/4',
-        alignSelf: 'end',
       },
     ],
   },
