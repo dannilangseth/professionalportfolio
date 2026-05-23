@@ -1,18 +1,6 @@
 'use client'
 
-import { useState, useRef, FormEvent } from 'react'
-
-async function geocodeCity(city: string): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
-    )
-    const data = await res.json()
-    return (data.results?.[0]?.country as string) ?? null
-  } catch {
-    return null
-  }
-}
+import { useState, FormEvent } from 'react'
 
 function buildEmailBody(hotelName: string) {
   return `Hi there,
@@ -39,14 +27,11 @@ interface DuplicateWarning {
 export default function OutreachPage() {
   const [hotelName, setHotelName] = useState('')
   const [contactEmail, setContactEmail] = useState('')
-  const [city, setCity] = useState('')
-  const [country, setCountry] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [duplicateWarning, setDuplicateWarning] = useState<DuplicateWarning | null>(null)
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleHotelNameChange(val: string) {
     setHotelName(val)
@@ -56,16 +41,6 @@ export default function OutreachPage() {
     if (!body || body.includes(hotelName) || body === '') {
       setBody(buildEmailBody(val))
     }
-  }
-
-  function handleCityChange(val: string) {
-    setCity(val)
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    if (val.trim().length < 2) return
-    debounceRef.current = setTimeout(async () => {
-      const detected = await geocodeCity(val)
-      if (detected) setCountry(detected)
-    }, 500)
   }
 
   async function handleEmailBlur() {
@@ -78,13 +53,14 @@ export default function OutreachPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-      if (!res.ok) return
       const data = await res.json()
+      console.log('[check-email] status:', res.status, 'response:', data)
+      if (!res.ok) return
       if (data.duplicate) {
         setDuplicateWarning({ hotel: data.hotel, date: data.date })
       }
-    } catch {
-      // non-blocking — silently ignore network errors
+    } catch (err) {
+      console.error('[check-email] fetch failed:', err)
     }
   }
 
@@ -97,7 +73,7 @@ export default function OutreachPage() {
       const res = await fetch('/api/send-outreach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hotelName, contactEmail, city, country, subject, body }),
+        body: JSON.stringify({ hotelName, contactEmail, city: '', country: '', subject, body }),
       })
 
       if (!res.ok) throw new Error(await res.text())
@@ -105,8 +81,6 @@ export default function OutreachPage() {
       setStatus('success')
       setHotelName('')
       setContactEmail('')
-      setCity('')
-      setCountry('')
       setSubject('')
       setBody('')
       setDuplicateWarning(null)
@@ -215,14 +189,6 @@ export default function OutreachPage() {
           font-size: 13px;
           color: #b85c38;
         }
-        .row-two {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-        }
-        @media (max-width: 600px) {
-          .row-two { grid-template-columns: 1fr; gap: 0; }
-        }
       `}</style>
 
       <div className="outreach-wrap">
@@ -273,33 +239,6 @@ export default function OutreachPage() {
                 Already contacted — {duplicateWarning.hotel}{duplicateWarning.date ? ` on ${duplicateWarning.date}` : ''}
               </span>
             )}
-          </div>
-
-          <div className="row-two">
-            <div className="form-field">
-              <label className="form-label" htmlFor="city">City</label>
-              <input
-                id="city"
-                className="form-input"
-                type="text"
-                value={city}
-                onChange={e => handleCityChange(e.target.value)}
-                placeholder="Koh Samui"
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label className="form-label" htmlFor="country">Country</label>
-              <input
-                id="country"
-                className="form-input"
-                type="text"
-                value={country}
-                onChange={e => setCountry(e.target.value)}
-                placeholder="Auto-detected from city"
-              />
-            </div>
           </div>
 
           <div className="form-field">
