@@ -4,11 +4,14 @@ export const dynamic = 'force-dynamic'
 
 const SHEET_ID = '1-P33-AjFFdhllHJIfazYZSNdEX8ByOqXxP-CDi9appo'
 
-// Columns: Country(A), City(B), Entity Name(C), Contact Name(D),
-//          Email Address(E), Outreach Status(F), Last Contact Date(G), Next Follow-up Date(H)
-const COL_HOTEL = 2  // C, index 2
-const COL_EMAIL = 4  // E, index 4
-const COL_DATE  = 6  // G, index 6
+// Sheet layout (col A is blank, data starts at B):
+// A(0): blank  B(1): Country  C(2): City  D(3): Entity Name  E(4): Contact Name
+// F(5): Email Address  G(6): Interest Level  H(7): Response Notes
+// I(8): Last Contact Date  J(9): Next Follow-up Date  K(10): Verification Link
+// Headers are in row 4; data rows start at row 5.
+const COL_HOTEL = 3  // D — Entity Name
+const COL_EMAIL = 5  // F — Email Address
+const COL_DATE  = 8  // I — Last Contact Date
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,11 +36,15 @@ export async function POST(req: NextRequest) {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'Sheet1!A:H',
+      range: 'Sheet1!A:K',
     })
 
     const rows = response.data.values ?? []
     const normalised = email.trim().toLowerCase()
+
+    console.log('[check-email] total rows in sheet:', rows.length)
+    console.log('[check-email] looking for:', normalised)
+    console.log('[check-email] column F (email) values:', rows.map(r => r[COL_EMAIL] ?? '(empty)'))
 
     for (const row of rows) {
       const rowEmail = (row[COL_EMAIL] ?? '').toString().trim().toLowerCase()

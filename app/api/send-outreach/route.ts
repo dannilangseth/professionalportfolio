@@ -55,20 +55,27 @@ async function appendToSheet(payload: OutreachPayload) {
   followUp.setDate(followUp.getDate() + 14)
   const followUpStr = followUp.toISOString().split('T')[0]
 
+  // Sheet layout — col A is blank, data starts at B:
+  // B: Country  C: City  D: Entity Name  E: Contact Name  F: Email Address
+  // G: Interest Level  H: Response Notes  I: Last Contact Date
+  // J: Next Follow-up Date  K: Verification Link
   const row = [
-    payload.country,
-    payload.city,
-    payload.hotelName,
-    '',
-    payload.contactEmail,
-    'Contacted',
-    todayStr,
-    followUpStr,
+    '',              // A — always blank
+    payload.country, // B — Country
+    payload.city,    // C — City
+    payload.hotelName, // D — Entity Name
+    '',              // E — Contact Name (unknown at send time)
+    payload.contactEmail, // F — Email Address
+    'Contacted',     // G — Interest Level
+    '',              // H — Response Notes
+    todayStr,        // I — Last Contact Date
+    followUpStr,     // J — Next Follow-up Date
+    '',              // K — Verification Link
   ]
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: 'Sheet1!A:H',
+    range: 'Sheet1!A:K',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [row] },
   })
