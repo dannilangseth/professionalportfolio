@@ -51,14 +51,15 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const todayStr = new Date().toISOString().split('T')[0]
 
-  // Sheet layout — col A is blank, data starts at B:
+  // Sheet layout — col A is always blank in this sheet; data starts at B.
+  // Google Sheets append detects the table starting at B, so we write
+  // directly to B:K (no leading blank for A).
   // B: Country  C: City  D: Entity Name  E: Contact Name  F: Email Address
-  // G: Interest Level (dropdown: High/Medium/Low/Not Interested — leave blank on first send)
+  // G: Interest Level (dropdown: High/Medium/Low/Not Interested — blank on first send)
   // H: Response Notes  I: Last Contact Date
-  // J: Next Follow-up Date — FORMULA (=I+7), do NOT write here or it breaks the formula
+  // J: Next Follow-up Date — FORMULA (=I+7), leave blank or it breaks the formula
   // K: Verification Link
   const row = [
-    '',                   // A — always blank
     payload.country,      // B — Country
     payload.city,         // C — City
     payload.hotelName,    // D — Entity Name
@@ -73,7 +74,7 @@ async function appendToSheet(payload: OutreachPayload) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: 'Sheet1!A:K',
+    range: 'Sheet1!B:K',
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [row] },
   })
