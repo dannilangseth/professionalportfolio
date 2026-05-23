@@ -49,28 +49,26 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const sheets = google.sheets({ version: 'v4', auth })
 
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const followUp = new Date(today)
-  followUp.setDate(followUp.getDate() + 14)
-  const followUpStr = followUp.toISOString().split('T')[0]
+  const todayStr = new Date().toISOString().split('T')[0]
 
   // Sheet layout — col A is blank, data starts at B:
   // B: Country  C: City  D: Entity Name  E: Contact Name  F: Email Address
-  // G: Interest Level  H: Response Notes  I: Last Contact Date
-  // J: Next Follow-up Date  K: Verification Link
+  // G: Interest Level (dropdown: High/Medium/Low/Not Interested — leave blank on first send)
+  // H: Response Notes  I: Last Contact Date
+  // J: Next Follow-up Date — FORMULA (=I+7), do NOT write here or it breaks the formula
+  // K: Verification Link
   const row = [
-    '',              // A — always blank
-    payload.country, // B — Country
-    payload.city,    // C — City
-    payload.hotelName, // D — Entity Name
-    '',              // E — Contact Name (unknown at send time)
+    '',                   // A — always blank
+    payload.country,      // B — Country
+    payload.city,         // C — City
+    payload.hotelName,    // D — Entity Name
+    '',                   // E — Contact Name (unknown at send time)
     payload.contactEmail, // F — Email Address
-    'Contacted',     // G — Interest Level
-    '',              // H — Response Notes
-    todayStr,        // I — Last Contact Date
-    followUpStr,     // J — Next Follow-up Date
-    '',              // K — Verification Link
+    '',                   // G — Interest Level (blank until she gets a response)
+    '',                   // H — Response Notes
+    todayStr,             // I — Last Contact Date
+    '',                   // J — Next Follow-up Date (sheet formula =I+7 fills this in)
+    '',                   // K — Verification Link
   ]
 
   await sheets.spreadsheets.values.append({
