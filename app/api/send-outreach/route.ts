@@ -49,16 +49,20 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const sheets = google.sheets({ version: 'v4', auth })
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const followUp = new Date(today)
+  followUp.setDate(followUp.getDate() + 7)
+  const followUpStr = followUp.toISOString().split('T')[0]
 
   // Sheet layout — col A is always blank in this sheet; data starts at B.
   // Google Sheets append detects the table starting at B, so we write
   // directly to B:K (no leading blank for A).
   // B: Country  C: City  D: Entity Name  E: Contact Name  F: Email Address
   // G: Interest Level (dropdown: High/Medium/Low/Not Interested — blank on first send)
-  // H: Response Notes  I: Last Contact Date
-  // J: Next Follow-up Date — FORMULA (=I+7), leave blank or it breaks the formula
-  // K: Verification Link
+  // H: Response Notes  I: Last Contact Date  J: Next Follow-up Date  K: Verification Link
+  // Note: the sheet has =I+7 formulas on J5:J124 but new appended rows fall
+  // outside that range, so we write the +7 value directly.
   const row = [
     payload.country,      // B — Country
     payload.city,         // C — City
@@ -68,7 +72,7 @@ async function appendToSheet(payload: OutreachPayload) {
     '',                   // G — Interest Level (blank until she gets a response)
     '',                   // H — Response Notes
     todayStr,             // I — Last Contact Date
-    '',                   // J — Next Follow-up Date (sheet formula =I+7 fills this in)
+    followUpStr,          // J — Next Follow-up Date (today + 7 days)
     '',                   // K — Verification Link
   ]
 
