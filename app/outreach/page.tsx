@@ -9,11 +9,23 @@ I came across ${hotelName} and honestly fell in love with the property — it's 
 
 I'm a professional hospitality and travel photographer. My work has been used by consumer brands across the U.S. for their websites, social, and seasonal campaigns — and I'd love to bring that same quality to ${hotelName}.
 
-I'd love to propose a stay at your property in exchange for a fully edited photo package, licensed for use across your website, social, and marketing emails.
+I'd love to propose a stay at your property in exchange for a fully edited photo package, licensed for use across your website, social, and marketing emails. A curated library of high-resolution, fully licensable images and video content that you own, control, and deploy across your website, newsletters, and marketing outreaches.
+
+Looking at your current digital presence, your imagery is beautiful, but very controlled. What performs best in luxury hospitality today is atmospheric, lifestyle-driven, and slightly imperfect content—showing someone truly living in the villa, not just posing in it.
+
+My style fills that exact gap by being aspirational but entirely believable. If you look at the work in my portfolio—specifically the Mykonos clifftop terrace, the Budapest Parliament, and my food photography—you'll see my instinct is to use natural light and composition to make a space feel deeply desirable without feeling staged.
+
+By partnering together, you'll get:
+
+Fresh eyes on an iconic property: Because ${hotelName} is a resort I have long admired, I'll arrive with genuine creative enthusiasm and a fresh perspective, avoiding the formulaic angles a standard local contracted photographer might fall into.
+
+Emotional authenticity: I want to capture the resort the way your ideal customer actually experiences it—golden-hour infinity pool moments, the clifftop dinner atmosphere, and that distinct feeling of luxury seclusion. This is the kind of authentic emotional storytelling that commercial shoots can't replicate, and it's exactly what converts viewers into guests.
 
 Portfolio: https://danniellelangseth.vercel.app
 
-Would love to discuss if it feels like a fit.
+Would love to discuss if this feels like a fit for your upcoming seasonal marketing needs.
+
+Warmly,
 
 Dannielle Langseth
 dannilangseth@gmail.com`
