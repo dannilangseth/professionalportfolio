@@ -11,6 +11,7 @@ interface OutreachPayload {
   country: string
   subject: string
   body: string
+  sentDate?: string  // YYYY-MM-DD in the user's local timezone, sent from the browser
 }
 
 async function sendEmail(payload: OutreachPayload) {
@@ -49,9 +50,11 @@ async function appendToSheet(payload: OutreachPayload) {
 
   const sheets = google.sheets({ version: 'v4', auth })
 
-  const today = new Date()
-  const todayStr = today.toISOString().split('T')[0]
-  const followUp = new Date(today)
+  // Prefer the date sent from the browser (user's local timezone).
+  // Fall back to UTC only if missing, which avoids recording yesterday's date
+  // for users in timezones ahead of UTC (e.g. Southeast Asia UTC+7).
+  const todayStr = payload.sentDate ?? new Date().toISOString().split('T')[0]
+  const followUp = new Date(todayStr + 'T00:00:00')
   followUp.setDate(followUp.getDate() + 7)
   const followUpStr = followUp.toISOString().split('T')[0]
 

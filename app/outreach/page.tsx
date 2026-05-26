@@ -85,7 +85,17 @@ export default function OutreachPage() {
       const res = await fetch('/api/send-outreach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hotelName, contactEmail, city: '', country: '', subject, body }),
+        body: JSON.stringify({
+          hotelName,
+          contactEmail,
+          city: '',
+          country: '',
+          subject,
+          body,
+          // Send local date from the browser — Vercel runs UTC so server-side
+          // new Date() would record yesterday for anyone east of UTC.
+          sentDate: new Intl.DateTimeFormat('en-CA').format(new Date()), // YYYY-MM-DD in local tz
+        }),
       })
 
       if (!res.ok) throw new Error(await res.text())
