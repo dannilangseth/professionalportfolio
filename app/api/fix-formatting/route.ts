@@ -18,7 +18,7 @@ export async function POST() {
     })
     const sheets = google.sheets({ version: 'v4', auth })
 
-    // ── Read current sheet to find banding ranges and sheetId ────────────────
+    // ── Read current sheet ───────────────────────────────────────────────────
     const spreadsheet = await sheets.spreadsheets.get({
       spreadsheetId: SHEET_ID,
       includeGridData: false,
@@ -28,47 +28,59 @@ export async function POST() {
     const sheetId = sheet1?.properties?.sheetId ?? 0
     const bandedRanges = sheet1?.bandedRanges ?? []
 
-    // ── Build requests ───────────────────────────────────────────────────────
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const requests: any[] = []
 
-    // 1. Delete all existing banding (may be fragmented from previous edits)
-    for (const br of bandedRanges) {
-      if (br.bandedRangeId != null) {
-        requests.push({ deleteBanding: { bandedRangeId: br.bandedRangeId } })
-      }
-    }
+    if (bandedRanges.length > 0) {
+      // ── Strategy: UPDATE the first (main) banding to cover the full range,
+      //    then delete any extra fragments.
+      //    Using updateBanding with fields:'range' leaves all colour/style
+      //    settings completely untouched — only the range boundary changes.
+      const [primary, ...extras] = bandedRanges
 
-    // 2. Harvest colours from the first existing banding so we preserve the
-    //    blue/white scheme exactly — fall back to the standard Sheets cyan
-    //    palette if nothing is found.
-    const existing = bandedRanges[0]
-    const rp = existing?.rowProperties
-
-    const headerColor      = rp?.headerColor      ?? { red: 0.255, green: 0.502, blue: 0.882 }
-    const firstBandColor   = rp?.firstBandColor   ?? { red: 1,     green: 1,     blue: 1     }
-    const secondBandColor  = rp?.secondBandColor  ?? { red: 0.812, green: 0.886, blue: 1     }
-
-    // 3. Add a single clean banding from row 1 to row 2000,
-    //    columns A–L (indices 0–12) so column L is included.
-    requests.push({
-      addBanding: {
-        bandedRange: {
-          range: {
-            sheetId,
-            startRowIndex:    0,
-            endRowIndex:      2000,
-            startColumnIndex: 0,
-            endColumnIndex:   12,   // A(0) … L(11) inclusive → end is exclusive 12
+      requests.push({
+        updateBanding: {
+          bandedRange: {
+            bandedRangeId: primary.bandedRangeId,
+            range: {
+              sheetId,
+              startRowIndex:    0,
+              endRowIndex:      2000,
+              startColumnIndex: 0,
+              endColumnIndex:   12,  // A–L inclusive (end is exclusive)
+            },
           },
-          rowProperties: {
-            headerColor,
-            firstBandColor,
-            secondBandColor,
+          fields: 'range',  // only change the range; preserve all colours exactly
+        },
+      })
+
+      // Delete leftover fragment bands
+      for (const br of extras) {
+        if (br.bandedRangeId != null) {
+          requests.push({ deleteBanding: { bandedRangeId: br.bandedRangeId } })
+        }
+      }
+    } else {
+      // No existing banding at all — add a fresh one with the standard blue/white
+      requests.push({
+        addBanding: {
+          bandedRange: {
+            range: {
+              sheetId,
+              startRowIndex:    0,
+              endRowIndex:      2000,
+              startColumnIndex: 0,
+              endColumnIndex:   12,
+            },
+            rowProperties: {
+              headerColorStyle:     { rgbColor: { red: 0.255, green: 0.502, blue: 0.882 } },
+              firstBandColorStyle:  { rgbColor: { red: 1,     green: 1,     blue: 1     } },
+              secondBandColorStyle: { rgbColor: { red: 0.812, green: 0.886, blue: 1     } },
+            },
           },
         },
-      },
-    })
+      })
+    }
 
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId: SHEET_ID,
@@ -77,8 +89,10 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      deletedBandingCount: bandedRanges.length,
-      message: 'Banding reset — rows 1-2000, columns A-L.',
+      bandingFound: bandedRanges.length,
+      message: bandedRanges.length > 0
+        ? `Extended existing banding to rows 1-2000 cols A-L. Deleted ${bandedRanges.length - 1} extra fragment(s).`
+        : 'No existing banding found — added fresh blue/white banding.',
     })
   } catch (err) {
     console.error('[fix-formatting]', err)
