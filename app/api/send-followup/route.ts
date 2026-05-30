@@ -68,7 +68,10 @@ export async function POST(req: NextRequest) {
     })
     const sheets = google.sheets({ version: 'v4', auth })
 
-    // ── Send email ────────────────────────────────────────────────────────────
+    // ── Send email + pre-warm auth token in parallel ─────────────────────────
+    // Pre-warming the token here means it's already cached by the time the
+    // email finishes, so the batchUpdate doesn't need an extra round-trip and
+    // stays well inside Vercel's 10 s function timeout.
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
@@ -82,15 +85,18 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    try {
-      await transporter.sendMail({
+    const [, emailResult] = await Promise.allSettled([
+      auth.getClient(),   // pre-warms the OAuth token while the email sends
+      transporter.sendMail({
         from: '"Dannielle Langseth" <dannilangseth@gmail.com>',
         to: email,
         subject,
         text: body,
-      })
-    } catch (emailErr) {
-      console.error('[send-followup] email failed for', email, emailErr)
+      }),
+    ])
+
+    if (emailResult.status === 'rejected') {
+      console.error('[send-followup] email failed for', email, emailResult.reason)
       return NextResponse.json({ error: 'Email failed to send' }, { status: 500 })
     }
 
