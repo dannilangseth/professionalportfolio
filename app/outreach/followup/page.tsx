@@ -82,9 +82,10 @@ export default function FollowUpPage() {
           }),
         })
         const data = await res.json()
+        // sheetError means email sent but sheet update failed — still mark ✓ sent
         setStatuses(prev => ({
           ...prev,
-          [contact.rowNum]: res.ok && data.success ? 'sent' : 'error',
+          [contact.rowNum]: (res.ok && data.success) ? 'sent' : 'error',
         }))
       } catch {
         setStatuses(prev => ({ ...prev, [contact.rowNum]: 'error' }))
@@ -92,6 +93,8 @@ export default function FollowUpPage() {
 
       done++
       setDoneCount(done)
+      // 300ms pause between sends — prevents Gmail from rate-limiting rapid connections
+      if (done < toSend.length) await new Promise(r => setTimeout(r, 300))
     }
 
     setIsSending(false)

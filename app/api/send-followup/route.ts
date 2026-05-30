@@ -51,29 +51,14 @@ export async function POST(req: NextRequest) {
 
     const { subject, body } = buildFollowUpEmail(hotelName)
 
-    // ── Send email ──────────────────────────────────────────────────────────
-    const nodemailer = (await import('nodemailer')).default
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: 'dannilangseth@gmail.com',
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    })
+    // ── Initialise both clients in parallel to save time ─────────────────────
+    const [nodemailerModule, { google }] = await Promise.all([
+      import('nodemailer'),
+      import('googleapis'),
+    ])
+    const nodemailer = nodemailerModule.default
 
-    await transporter.sendMail({
-      from: '"Dannielle Langseth" <dannilangseth@gmail.com>',
-      to: email,
-      subject,
-      text: body,
-    })
-
-    // ── Update sheet row: stamp new Last Contact Date and Next Follow-up Date ─
-    const { google } = await import('googleapis')
     const privateKey = (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\\\n/g, '\\n').replace(/\\n/g, '\n')
-
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -81,16 +66,52 @@ export async function POST(req: NextRequest) {
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     })
-
     const sheets = google.sheets({ version: 'v4', auth })
 
-    // Columns I and J hold Last Contact Date and Next Follow-up Date
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: SHEET_ID,
-      range: `Sheet1!I${rowNum}:J${rowNum}`,
-      valueInputOption: 'USER_ENTERED',
-      requestBody: { values: [[todayStr, followUpStr]] },
+    // ── Send email ────────────────────────────────────────────────────────────
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      connectionTimeout: 8000,  // fail fast instead of hanging to Vercel timeout
+      greetingTimeout: 5000,
+      socketTimeout: 8000,
+      auth: {
+        user: 'dannilangseth@gmail.com',
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
     })
+
+    try {
+      await transporter.sendMail({
+        from: '"Dannielle Langseth" <dannilangseth@gmail.com>',
+        to: email,
+        subject,
+        text: body,
+      })
+    } catch (emailErr) {
+      console.error('[send-followup] email failed for', email, emailErr)
+      return NextResponse.json({ error: 'Email failed to send' }, { status: 500 })
+    }
+
+    // ── Update sheet: I (Last Contact), J (Next Follow-up), L (Follow-up 1 Sent)
+    // Single batchUpdate call so both ranges write atomically.
+    try {
+      await sheets.spreadsheets.values.batchUpdate({
+        spreadsheetId: SHEET_ID,
+        requestBody: {
+          valueInputOption: 'USER_ENTERED',
+          data: [
+            { range: `Sheet1!I${rowNum}:J${rowNum}`, values: [[todayStr, followUpStr]] },
+            { range: `Sheet1!L${rowNum}`,             values: [[todayStr]] },
+          ],
+        },
+      })
+    } catch (sheetErr) {
+      console.error('[send-followup] sheet update failed for row', rowNum, sheetErr)
+      // Email already sent — surface as partial success so the UI row shows ✓ not ✗
+      return NextResponse.json({ success: true, sheetError: true })
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
