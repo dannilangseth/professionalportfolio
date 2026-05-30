@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 interface Contact {
   rowNum: number
@@ -275,6 +276,21 @@ export default function FollowUpPage() {
           <p className="lede" style={{ marginTop: '1.25rem' }}>
             Contacts with no interest level recorded who are 7+ days overdue for a follow-up.
           </p>
+          <Link
+            href="/outreach/followup/manual"
+            style={{
+              display: 'inline-block',
+              marginTop: '1rem',
+              fontFamily: 'var(--label)',
+              fontSize: 10,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--accent)',
+              textDecoration: 'none',
+            }}
+          >
+            Send a manual follow-up →
+          </Link>
         </div>
 
         {loading && (
