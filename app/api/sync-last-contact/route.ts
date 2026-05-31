@@ -31,11 +31,14 @@ export async function POST() {
     const changed: string[] = []
 
     rows.forEach((row, idx) => {
+      // Skip header/title rows (data starts at row 5 = idx 4)
+      if (idx < 4) return
+
       const followUp1Sent = (row[11] ?? '').toString().trim()  // col L
       const lastContact   = (row[8]  ?? '').toString().trim()  // col I
 
-      // Only act on rows that have a Follow-up 1 Sent date
-      if (!followUp1Sent) return
+      // Only act on rows that have a date in Follow-up 1 Sent (not a header label)
+      if (!followUp1Sent || !/^\d{4}-\d{2}-\d{2}$/.test(followUp1Sent)) return
 
       // Skip if already in sync
       if (lastContact === followUp1Sent) return
