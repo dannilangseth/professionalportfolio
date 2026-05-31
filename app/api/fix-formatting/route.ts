@@ -59,7 +59,7 @@ export async function POST() {
     const ROW_PROPS = {
       headerColorStyle:     { rgbColor: { red: 0.157, green: 0.306, blue: 0.608 } }, // dark blue
       firstBandColorStyle:  { rgbColor: { red: 1,     green: 1,     blue: 1     } }, // white
-      secondBandColorStyle: { rgbColor: { red: 0.918, green: 0.945, blue: 0.992 } }, // lighter blue
+      secondBandColorStyle: { rgbColor: { red: 0.957, green: 0.972, blue: 0.996 } }, // very light blue
     }
 
     if (bandedRanges.length > 0) {
