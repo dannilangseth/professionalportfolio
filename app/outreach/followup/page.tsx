@@ -72,22 +72,33 @@ export default function FollowUpPage() {
       setStatuses(prev => ({ ...prev, [contact.rowNum]: 'sending' }))
 
       try {
-        const res = await fetch('/api/send-followup', {
+        // Step 1 — send the email (email only, no sheet write)
+        const emailRes = await fetch('/api/send-followup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            rowNum: contact.rowNum,
             hotelName: contact.hotelName,
             email: contact.email,
-            sentDate,
           }),
         })
-        const data = await res.json()
-        // sheetError means email sent but sheet update failed — still mark ✓ sent
-        setStatuses(prev => ({
-          ...prev,
-          [contact.rowNum]: (res.ok && data.success) ? 'sent' : 'error',
-        }))
+        const emailData = await emailRes.json()
+
+        if (!emailRes.ok || !emailData.success) {
+          setStatuses(prev => ({ ...prev, [contact.rowNum]: 'error' }))
+        } else {
+          // Step 2 — update the sheet (separate call so each step gets full 10s)
+          try {
+            await fetch('/api/mark-followup-sent', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ rowNum: contact.rowNum, sentDate }),
+            })
+          } catch {
+            // Sheet update failed but email sent — log and continue
+            console.error('[followup] sheet update failed for row', contact.rowNum)
+          }
+          setStatuses(prev => ({ ...prev, [contact.rowNum]: 'sent' }))
+        }
       } catch {
         setStatuses(prev => ({ ...prev, [contact.rowNum]: 'error' }))
       }

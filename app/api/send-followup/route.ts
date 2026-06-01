@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-const SHEET_ID = '1-P33-AjFFdhllHJIfazYZSNdEX8ByOqXxP-CDi9appo'
-
 function buildFollowUpEmail(hotelName: string): { subject: string; body: string } {
   const subject = `Following up — ${hotelName} Photography Proposal`
 
@@ -36,47 +34,26 @@ dannilangseth@gmail.com`
   return { subject, body }
 }
 
+// This route sends the email only.
+// The client calls /api/mark-followup-sent immediately after to update the sheet.
+// Splitting into two calls gives each step the full Vercel 10s timeout.
 export async function POST(req: NextRequest) {
   try {
-    const { rowNum, hotelName, email, sentDate } = await req.json()
+    const { hotelName, email } = await req.json()
 
-    if (!rowNum || !hotelName || !email) {
+    if (!hotelName || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    const todayStr: string = sentDate ?? new Date().toISOString().split('T')[0]
-    const followUp = new Date(todayStr + 'T00:00:00')
-    followUp.setDate(followUp.getDate() + 7)
-    const followUpStr = followUp.toISOString().split('T')[0]
-
     const { subject, body } = buildFollowUpEmail(hotelName)
 
-    // ── Initialise both clients in parallel to save time ─────────────────────
-    const [nodemailerModule, { google }] = await Promise.all([
-      import('nodemailer'),
-      import('googleapis'),
-    ])
-    const nodemailer = nodemailerModule.default
+    const nodemailer = (await import('nodemailer')).default
 
-    const privateKey = (process.env.GOOGLE_PRIVATE_KEY ?? '').replace(/\\\\n/g, '\\n').replace(/\\n/g, '\n')
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: privateKey,
-      },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    })
-    const sheets = google.sheets({ version: 'v4', auth })
-
-    // ── Send email + pre-warm auth token in parallel ─────────────────────────
-    // Pre-warming the token here means it's already cached by the time the
-    // email finishes, so the batchUpdate doesn't need an extra round-trip and
-    // stays well inside Vercel's 10 s function timeout.
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
       secure: false,
-      connectionTimeout: 8000,  // fail fast instead of hanging to Vercel timeout
+      connectionTimeout: 8000,
       greetingTimeout: 5000,
       socketTimeout: 8000,
       auth: {
@@ -85,43 +62,16 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const [, emailResult] = await Promise.allSettled([
-      auth.getClient(),   // pre-warms the OAuth token while the email sends
-      transporter.sendMail({
-        from: '"Dannielle Langseth" <dannilangseth@gmail.com>',
-        to: email,
-        subject,
-        text: body,
-      }),
-    ])
-
-    if (emailResult.status === 'rejected') {
-      console.error('[send-followup] email failed for', email, emailResult.reason)
-      return NextResponse.json({ error: 'Email failed to send' }, { status: 500 })
-    }
-
-    // ── Update sheet: I (Last Contact), J (Next Follow-up), L (Follow-up 1 Sent)
-    // Single batchUpdate call so both ranges write atomically.
-    try {
-      await sheets.spreadsheets.values.batchUpdate({
-        spreadsheetId: SHEET_ID,
-        requestBody: {
-          valueInputOption: 'USER_ENTERED',
-          data: [
-            { range: `Sheet1!I${rowNum}:J${rowNum}`, values: [[todayStr, followUpStr]] },
-            { range: `Sheet1!L${rowNum}`,             values: [[todayStr]] },
-          ],
-        },
-      })
-    } catch (sheetErr) {
-      console.error('[send-followup] sheet update failed for row', rowNum, sheetErr)
-      // Email already sent — surface as partial success so the UI row shows ✓ not ✗
-      return NextResponse.json({ success: true, sheetError: true })
-    }
+    await transporter.sendMail({
+      from: '"Dannielle Langseth" <dannilangseth@gmail.com>',
+      to: email,
+      subject,
+      text: body,
+    })
 
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error('[send-followup]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Email failed to send' }, { status: 500 })
   }
 }
