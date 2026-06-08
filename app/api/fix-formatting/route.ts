@@ -52,7 +52,7 @@ export async function POST() {
       startRowIndex:    3,     // row 4 = header row
       endRowIndex:      2000,
       startColumnIndex: 0,     // col A
-      endColumnIndex:   12,    // cols A–L inclusive
+      endColumnIndex:   13,    // cols A–M inclusive
     }
 
     // Dark blue header + white / light-blue alternating bands
@@ -100,7 +100,7 @@ export async function POST() {
           startRowIndex:    3,
           endRowIndex:      2000,
           startColumnIndex: 0,
-          endColumnIndex:   12,
+          endColumnIndex:   13,
         },
         top:    noBorder,
         bottom: noBorder,

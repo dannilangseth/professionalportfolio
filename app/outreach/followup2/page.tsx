@@ -9,13 +9,13 @@ interface Contact {
   email: string
   city: string
   country: string
-  lastContactDate: string
+  nextFollowUpDate: string
   daysSince: number
 }
 
 type SendStatus = 'idle' | 'sending' | 'sent' | 'error'
 
-export default function FollowUpPage() {
+export default function FollowUp2Page() {
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -25,7 +25,7 @@ export default function FollowUpPage() {
   const [doneCount, setDoneCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/followup-contacts')
+    fetch('/api/followup2-contacts')
       .then(r => r.json())
       .then(data => {
         if (data.error) throw new Error(data.error)
@@ -60,7 +60,6 @@ export default function FollowUpPage() {
     setIsSending(true)
     setDoneCount(0)
 
-    // Initialise all selected as idle
     const init: Record<number, SendStatus> = {}
     toSend.forEach(c => { init[c.rowNum] = 'idle' })
     setStatuses(init)
@@ -72,30 +71,26 @@ export default function FollowUpPage() {
       setStatuses(prev => ({ ...prev, [contact.rowNum]: 'sending' }))
 
       try {
-        // Step 1 — send the email (email only, no sheet write)
-        const emailRes = await fetch('/api/send-followup', {
+        // Step 1 — send email
+        const emailRes = await fetch('/api/send-followup2', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            hotelName: contact.hotelName,
-            email: contact.email,
-          }),
+          body: JSON.stringify({ hotelName: contact.hotelName, email: contact.email }),
         })
         const emailData = await emailRes.json()
 
         if (!emailRes.ok || !emailData.success) {
           setStatuses(prev => ({ ...prev, [contact.rowNum]: 'error' }))
         } else {
-          // Step 2 — update the sheet (separate call so each step gets full 10s)
+          // Step 2 — update sheet
           try {
-            await fetch('/api/mark-followup-sent', {
+            await fetch('/api/mark-followup2-sent', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ rowNum: contact.rowNum, sentDate }),
             })
           } catch {
-            // Sheet update failed but email sent — log and continue
-            console.error('[followup] sheet update failed for row', contact.rowNum)
+            console.error('[followup2] sheet update failed for row', contact.rowNum)
           }
           setStatuses(prev => ({ ...prev, [contact.rowNum]: 'sent' }))
         }
@@ -105,7 +100,6 @@ export default function FollowUpPage() {
 
       done++
       setDoneCount(done)
-      // 300ms pause between sends — prevents Gmail from rate-limiting rapid connections
       if (done < toSend.length) await new Promise(r => setTimeout(r, 300))
     }
 
@@ -283,38 +277,25 @@ export default function FollowUpPage() {
       <div className="fu-wrap">
         <div className="page-header">
           <p className="eyebrow"><span className="num">✦</span> Internal Tool</p>
-          <h1 className="display">Follow-up <em>Outreach</em></h1>
+          <h1 className="display">Follow-up 2 <em>Outreach</em></h1>
           <p className="lede" style={{ marginTop: '1.25rem' }}>
-            Contacts with no interest level recorded who are 7+ days overdue for a follow-up.
+            Final outreach to contacts who received follow-up 1 but have not responded. Next follow-up date is today or overdue.
           </p>
-          <div style={{ marginTop: '1rem', display: 'flex', gap: '1.5rem' }}>
-            <Link
-              href="/outreach/followup/manual"
-              style={{
-                fontFamily: 'var(--label)',
-                fontSize: 10,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: 'var(--accent)',
-                textDecoration: 'none',
-              }}
-            >
-              Send a manual follow-up →
-            </Link>
-            <Link
-              href="/outreach/followup2"
-              style={{
-                fontFamily: 'var(--label)',
-                fontSize: 10,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color: 'var(--text-3)',
-                textDecoration: 'none',
-              }}
-            >
-              Follow-up 2 (final outreach) →
-            </Link>
-          </div>
+          <Link
+            href="/outreach/followup"
+            style={{
+              display: 'inline-block',
+              marginTop: '1rem',
+              fontFamily: 'var(--label)',
+              fontSize: 10,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--text-3)',
+              textDecoration: 'none',
+            }}
+          >
+            ← Back to follow-up 1
+          </Link>
         </div>
 
         {loading && (
@@ -331,7 +312,7 @@ export default function FollowUpPage() {
 
         {!loading && !loadError && contacts.length === 0 && (
           <div className="empty-state">
-            No follow-ups due — check back in a few days.
+            No follow-up 2s due — check back when next follow-up dates arrive.
           </div>
         )}
 
@@ -395,8 +376,8 @@ export default function FollowUpPage() {
                         {(c.city || c.country) && (
                           <span>{[c.city, c.country].filter(Boolean).join(', ')}</span>
                         )}
-                        <span className={c.daysSince > 14 ? 'fu-overdue' : ''}>
-                          {c.daysSince}d ago
+                        <span className={c.daysSince > 7 ? 'fu-overdue' : ''}>
+                          {c.daysSince === 0 ? 'due today' : `${c.daysSince}d overdue`}
                         </span>
                       </div>
                     </div>
@@ -419,14 +400,14 @@ export default function FollowUpPage() {
               >
                 {isSending
                   ? `Sending ${doneCount} / ${selectedCount}…`
-                  : `Send ${selectedCount} Follow-up${selectedCount !== 1 ? 's' : ''}`}
+                  : `Send ${selectedCount} Final Follow-up${selectedCount !== 1 ? 's' : ''}`}
               </button>
             )}
 
             {allDone && (
               <div className="done-banner">
                 <p>
-                  {sentCount} follow-up{sentCount !== 1 ? 's' : ''} sent — sheet updated.
+                  {sentCount} final follow-up{sentCount !== 1 ? 's' : ''} sent — sheet updated.
                 </p>
                 {errorCount > 0 && (
                   <p className="err-note">
