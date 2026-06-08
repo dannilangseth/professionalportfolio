@@ -156,15 +156,12 @@ export async function POST() {
 
       if (!reference) return
 
-      const refDate = new Date(reference + 'T00:00:00')
-      refDate.setDate(refDate.getDate() + 7)
-      const expectedJ = refDate.toISOString().split('T')[0]
-
-      if (lastContact === reference && nextFollowUp === expectedJ) return
+      // Only sync I — J is now a formula (=IF(I+7)) set above and must not be overwritten
+      if (lastContact === reference) return
 
       const rowNum = idx + 1
-      syncUpdates.push({ range: `Sheet1!I${rowNum}:J${rowNum}`, values: [[reference, expectedJ]] })
-      syncChanged.push(`Row ${rowNum}: I→"${reference}", J→"${expectedJ}"`)
+      syncUpdates.push({ range: `Sheet1!I${rowNum}`, values: [[reference]] })
+      syncChanged.push(`Row ${rowNum}: I→"${reference}"`)
     })
 
     if (syncUpdates.length > 0) {
