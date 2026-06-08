@@ -4,10 +4,11 @@ export const dynamic = 'force-dynamic'
 
 const SHEET_ID = '1-P33-AjFFdhllHJIfazYZSNdEX8ByOqXxP-CDi9appo'
 
-// For every row where column L (Follow-up 1 Sent) has a date:
+// For every row where column L or M has a sent date:
+//   - Use the most recent sent date (M takes priority over L)
 //   - Set column I (Last Contact Date) to that date
 //   - Set column J (Next Follow-up Date) to that date + 7 days
-// Runs only where I or J are out of sync with L.
+// Only updates rows where I or J are out of sync.
 
 export async function POST() {
   try {
@@ -25,42 +26,48 @@ export async function POST() {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'Sheet1!A:L',
+      range: 'Sheet1!A:M',
     })
     const rows = response.data.values ?? []
 
     const updates: { range: string; values: string[][] }[] = []
     const changed: string[] = []
+    const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
     rows.forEach((row, idx) => {
-      // Skip header/title rows (data starts at row 5 = idx 4)
-      if (idx < 4) return
+      if (idx < 4) return  // skip header/title rows
 
       const followUp1Sent = (row[11] ?? '').toString().trim()  // col L
+      const followUp2Sent = (row[12] ?? '').toString().trim()  // col M
       const lastContact   = (row[8]  ?? '').toString().trim()  // col I
       const nextFollowUp  = (row[9]  ?? '').toString().trim()  // col J
 
-      // Only act on rows that have a real date in Follow-up 1 Sent
-      if (!followUp1Sent || !/^\d{4}-\d{2}-\d{2}$/.test(followUp1Sent)) return
+      // Use the most recent follow-up sent date — M takes priority over L
+      const reference = DATE_RE.test(followUp2Sent)
+        ? followUp2Sent
+        : DATE_RE.test(followUp1Sent)
+          ? followUp1Sent
+          : null
 
-      // Calculate what J should be: L + 7 days
-      const sentDateObj = new Date(followUp1Sent + 'T00:00:00')
-      sentDateObj.setDate(sentDateObj.getDate() + 7)
-      const expectedNextFollowUp = sentDateObj.toISOString().split('T')[0]
+      if (!reference) return  // no sent date on this row
 
-      const iNeedsUpdate = lastContact !== followUp1Sent
+      // Calculate what J should be: reference + 7 days
+      const refDate = new Date(reference + 'T00:00:00')
+      refDate.setDate(refDate.getDate() + 7)
+      const expectedNextFollowUp = refDate.toISOString().split('T')[0]
+
+      const iNeedsUpdate = lastContact !== reference
       const jNeedsUpdate = nextFollowUp !== expectedNextFollowUp
 
       if (!iNeedsUpdate && !jNeedsUpdate) return
 
       const rowNum = idx + 1
-      // Write I and J together in one range for efficiency
       updates.push({
         range: `Sheet1!I${rowNum}:J${rowNum}`,
-        values: [[followUp1Sent, expectedNextFollowUp]],
+        values: [[reference, expectedNextFollowUp]],
       })
       changed.push(
-        `Row ${rowNum}: I "${lastContact}"→"${followUp1Sent}", J "${nextFollowUp}"→"${expectedNextFollowUp}"`
+        `Row ${rowNum}: I "${lastContact}"→"${reference}", J "${nextFollowUp}"→"${expectedNextFollowUp}"`
       )
     })
 
