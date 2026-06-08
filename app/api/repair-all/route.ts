@@ -77,6 +77,25 @@ export async function POST() {
       formatRequests.push({ addBanding: { bandedRange: { range: TARGET_RANGE, rowProperties: ROW_PROPS } } })
     }
 
+    // Set J = I + 7 formula for all data rows (J5:J2000)
+    // repeatCell adjusts the relative reference per row automatically.
+    // Formula shows blank when I is empty so unused rows stay clean.
+    formatRequests.push({
+      repeatCell: {
+        range: {
+          sheetId,
+          startRowIndex:    4,   // row 5
+          endRowIndex:      2000,
+          startColumnIndex: 9,   // col J
+          endColumnIndex:   10,
+        },
+        cell: {
+          userEnteredValue: { formulaValue: '=IF(I5="","",I5+7)' },
+        },
+        fields: 'userEnteredValue',
+      },
+    })
+
     // Clear stray borders in data range
     const noBorder = { style: 'NONE' }
     formatRequests.push({

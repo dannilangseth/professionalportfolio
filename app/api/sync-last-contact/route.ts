@@ -52,23 +52,12 @@ export async function POST() {
       if (!reference) return  // no sent date on this row
 
       // Calculate what J should be: reference + 7 days
-      const refDate = new Date(reference + 'T00:00:00')
-      refDate.setDate(refDate.getDate() + 7)
-      const expectedNextFollowUp = refDate.toISOString().split('T')[0]
-
-      const iNeedsUpdate = lastContact !== reference
-      const jNeedsUpdate = nextFollowUp !== expectedNextFollowUp
-
-      if (!iNeedsUpdate && !jNeedsUpdate) return
+      if (lastContact === reference) return
 
       const rowNum = idx + 1
-      updates.push({
-        range: `Sheet1!I${rowNum}:J${rowNum}`,
-        values: [[reference, expectedNextFollowUp]],
-      })
-      changed.push(
-        `Row ${rowNum}: I "${lastContact}"→"${reference}", J "${nextFollowUp}"→"${expectedNextFollowUp}"`
-      )
+      updates.push({ range: `Sheet1!I${rowNum}`, values: [[reference]] })
+      changed.push(`Row ${rowNum}: I "${lastContact}"→"${reference}"`)
+      // J is a formula (=IF(I+7)) in the sheet — it updates automatically when I changes
     })
 
     if (updates.length > 0) {

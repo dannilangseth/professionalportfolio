@@ -4,8 +4,9 @@ export const dynamic = 'force-dynamic'
 
 const SHEET_ID = '1-P33-AjFFdhllHJIfazYZSNdEX8ByOqXxP-CDi9appo'
 
-// Updates columns I (Last Contact), J (Next Follow-up), and L (Follow-up 1 Sent)
-// for a given row. Called by the client immediately after /api/send-followup succeeds.
+// Updates column I (Last Contact) and L (Follow-up 1 Sent).
+// J (Next Follow-up) is handled automatically by the =IF(I+7) formula in the sheet.
+// Called by the client immediately after /api/send-followup succeeds.
 export async function POST(req: NextRequest) {
   try {
     const { rowNum, sentDate } = await req.json()
@@ -13,10 +14,6 @@ export async function POST(req: NextRequest) {
     if (!rowNum || !sentDate) {
       return NextResponse.json({ error: 'Missing rowNum or sentDate' }, { status: 400 })
     }
-
-    const followUp = new Date(sentDate + 'T00:00:00')
-    followUp.setDate(followUp.getDate() + 7)
-    const followUpStr = followUp.toISOString().split('T')[0]
 
     const { google } = await import('googleapis')
 
@@ -35,8 +32,8 @@ export async function POST(req: NextRequest) {
       requestBody: {
         valueInputOption: 'USER_ENTERED',
         data: [
-          { range: `Sheet1!I${rowNum}:J${rowNum}`, values: [[sentDate, followUpStr]] },
-          { range: `Sheet1!L${rowNum}`,             values: [[sentDate]] },
+          { range: `Sheet1!I${rowNum}`, values: [[sentDate]] },
+          { range: `Sheet1!L${rowNum}`, values: [[sentDate]] },
         ],
       },
     })

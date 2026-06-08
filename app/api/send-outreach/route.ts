@@ -54,28 +54,26 @@ async function appendToSheet(payload: OutreachPayload) {
   // Fall back to UTC only if missing, which avoids recording yesterday's date
   // for users in timezones ahead of UTC (e.g. Southeast Asia UTC+7).
   const todayStr = payload.sentDate ?? new Date().toISOString().split('T')[0]
-  const followUp = new Date(todayStr + 'T00:00:00')
-  followUp.setDate(followUp.getDate() + 7)
-  const followUpStr = followUp.toISOString().split('T')[0]
 
-  // Sheet layout — col A is always blank in this sheet; data starts at B.
-  // Google Sheets append detects the table starting at B, so we write
-  // directly to B:K (no leading blank for A).
+  // J uses a row-position-independent formula so it always stays = I + 7
+  // even if I is edited manually later. INDIRECT("I"&ROW()) resolves to the
+  // correct cell regardless of which row this gets appended to.
+  const jFormula = '=IF(INDIRECT("I"&ROW())="","",INDIRECT("I"&ROW())+7)'
+
+  // Sheet layout — col A is always blank; data starts at B.
   // B: Country  C: City  D: Entity Name  E: Contact Name  F: Email Address
-  // G: Interest Level (dropdown: High/Medium/Low/Not Interested — blank on first send)
-  // H: Response Notes  I: Last Contact Date  J: Next Follow-up Date  K: Verification Link
-  // Note: the sheet has =I+7 formulas on J5:J124 but new appended rows fall
-  // outside that range, so we write the +7 value directly.
+  // G: Interest Level  H: Response Notes  I: Last Contact Date
+  // J: Next Follow-up Date (formula)  K: Verification Link
   const row = [
     payload.country,      // B — Country
     payload.city,         // C — City
     payload.hotelName,    // D — Entity Name
-    '',                   // E — Contact Name (unknown at send time)
+    '',                   // E — Contact Name
     payload.contactEmail, // F — Email Address
-    '',                   // G — Interest Level (blank until she gets a response)
+    '',                   // G — Interest Level
     '',                   // H — Response Notes
     todayStr,             // I — Last Contact Date
-    followUpStr,          // J — Next Follow-up Date (today + 7 days)
+    jFormula,             // J — Next Follow-up Date (formula: I + 7)
     '',                   // K — Verification Link
   ]
 

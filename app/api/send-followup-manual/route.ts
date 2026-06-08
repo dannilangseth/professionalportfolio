@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
     }
 
     const todayStr: string = sentDate ?? new Intl.DateTimeFormat('en-CA').format(new Date())
-    const followUp = new Date(todayStr + 'T00:00:00')
-    followUp.setDate(followUp.getDate() + 7)
-    const followUpStr = followUp.toISOString().split('T')[0]
+    // J is a formula in the sheet (=IF(I+7)) — we never write it for existing rows.
+    // For new appended rows we write a position-independent formula instead of a value.
+    const jFormula = '=IF(INDIRECT("I"&ROW())="","",INDIRECT("I"&ROW())+7)'
 
     const { subject, body } = buildFollowUpEmail(hotelName)
 
@@ -117,14 +117,15 @@ export async function POST(req: NextRequest) {
       }
 
       if (foundRowNum !== null) {
-        // Update existing row: Last Contact (I), Next Follow-up (J), Follow-up 1 Sent (L)
+        // Update existing row: Last Contact (I) and Follow-up 1 Sent (L).
+        // J updates automatically via the =IF(I+7) formula already in the sheet.
         await sheets.spreadsheets.values.batchUpdate({
           spreadsheetId: SHEET_ID,
           requestBody: {
             valueInputOption: 'USER_ENTERED',
             data: [
-              { range: `Sheet1!I${foundRowNum}:J${foundRowNum}`, values: [[todayStr, followUpStr]] },
-              { range: `Sheet1!L${foundRowNum}`,                  values: [[todayStr]] },
+              { range: `Sheet1!I${foundRowNum}`, values: [[todayStr]] },
+              { range: `Sheet1!L${foundRowNum}`, values: [[todayStr]] },
             ],
           },
         })
@@ -146,10 +147,10 @@ export async function POST(req: NextRequest) {
               email,       // F Email
               '',          // G Interest Level
               '',          // H Response Notes
-              todayStr,    // I Last Contact Date
-              followUpStr, // J Next Follow-up Date
-              '',          // K Verification Link
-              todayStr,    // L Follow-up 1 Sent
+              todayStr,  // I Last Contact Date
+              jFormula,  // J Next Follow-up Date (formula: I + 7)
+              '',        // K Verification Link
+              todayStr,  // L Follow-up 1 Sent
             ]],
           },
         })
